@@ -73,9 +73,10 @@ func (c *Chaincode) Invoke(stub shim.ChaincodeStubInterface, function string, ar
 	
 	if function == "createMedicalRecord" {
 		return c.createMedicalRecord(stub, args[0], args[1], age, args[3], args[4])
-	} else if function == "updateMedicalRecord" {
+	} 
+	/*else if function == "updateMedicalRecord" {
 		return c.updateMedicalRecord(stub, args[0], args[1], age, args[3], args[4])
-	}
+	}*/
 	
 	return nil, nil
 }
@@ -113,7 +114,7 @@ func (c *Chaincode) saveRecord(stub shim.ChaincodeStubInterface, cont Contact) (
 		errors.New("SAVE_RECORD: Error encoding Medical Record.")
 	}
 	
-	err = stub.PutState(contact.ContactId, contact)
+	err = stub.PutState(cont.ContactId, contact)
 	if err != nil{
 		errors.New("SAVE_RECORD: Error saving Medical Record.")
 	}
