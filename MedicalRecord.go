@@ -71,8 +71,8 @@ func (c *Chaincode) Invoke(stub shim.ChaincodeStubInterface, function string, ar
 		errors.New("INVOKE: String to int conversion failed.")
 	}
 	
-	if function == "createMedicalRecord" {
-		return c.createMedicalRecord(stub, args[0], args[1], age, args[3], args[4])
+	if function == "writeMedicalRecord" {
+		return c.writeMedicalRecord(stub, args[0], args[1], age, args[3], args[4])
 	} 
 	/*else if function == "updateMedicalRecord" {
 		return c.updateMedicalRecord(stub, args[0], args[1], age, args[3], args[4])
@@ -82,20 +82,29 @@ func (c *Chaincode) Invoke(stub shim.ChaincodeStubInterface, function string, ar
 }
 
 func (c *Chaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error){
+
+	if len(args) != 1{
+		errors.New("QUERY: Incorrect number of arguments passed.")
+	}
+
+	if function == "readMedicalRecord" {
+		return c.readMedicalRecord(stub, args[0])
+	}
+
 	return nil, nil
 }
 
-func (c *Chaincode) createMedicalRecord(stub shim.ChaincodeStubInterface, contactId string, name string, age int, gender string, race string) ([]byte, error){
+func (c *Chaincode) writeMedicalRecord(stub shim.ChaincodeStubInterface, contactId string, name string, age int, gender string, race string) ([]byte, error){
 
 	if contactId == ""{
-		return nil, errors.New("CREATE_MEDICAL_RECORD: Invalid Contact ID provided.")
+		return nil, errors.New("WRITE_MEDICAL_RECORD: Invalid Contact ID provided.")
 	}
 	
 	var cont Contact
 	contactJson  := []byte(`{"ContactId":"` + contactId + `","Name":"` + name + `","Age":` + strconv.Itoa(age) + `,"Gender":"` + gender + `","Race":"` + race + `"}`)
 	err := json.Unmarshal(contactJson, &cont)
 	if err != nil{
-		errors.New("CREATE_MEDICAL_RECORD: Invalid JSON object.")
+		errors.New("WRITE_MEDICAL_RECORD: Invalid JSON object.")
 	}
 	
 	c.saveRecord(stub, cont)
@@ -120,4 +129,21 @@ func (c *Chaincode) saveRecord(stub shim.ChaincodeStubInterface, cont Contact) (
 	}
 	
 	return true, nil
+}
+
+func (c *Chaincode) readMedicalRecord(stub shim.ChaincodeStubInterface, contactId string) ([]byte, error){
+
+	//var cont Contact
+
+	recordAsBytes, err := stub.GetState(contactId);
+	if err != nil{
+		errors.New("READ_MEDICAL_RECORD: Failed to get Medical Record")
+	}
+	
+	/*err = json.Unmarshal(recordAsBytes, &cont)
+	if err != nil{
+		errors.New("READ_MEDICAL_RECORD: Corrupt Medical Record")
+	}*/
+	
+	return recordAsBytes, nil
 }
