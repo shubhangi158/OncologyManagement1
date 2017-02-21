@@ -22,15 +22,15 @@ type Contact struct{
 }
 
 type Case struct{
-	T_Stage string
 	N_Stage string
+	T_Stage string
 	Grade string
 	Condition string
-	Survival_Time int												//Survival Time is in percentage.
 	Cancer_Diagnosis string
-	Metastasis_Location string
 	Cancer_Stage string
+	Metastasis_Location string
 	NCCN_Distress_Score	int
+	Survival_Time int									//Survival Time is in percentage.
 } 
 
 type BackgroundInformation struct{
@@ -62,20 +62,20 @@ func (c *Chaincode) Init(stub shim.ChaincodeStubInterface, function string, args
 
 func (c *Chaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error){
 	
-	if len(args) != 5 {
+	if len(args) != 21 {
 		errors.New("INVOKE: Incorrect number of arguments passed.")
 	}
 	
-	age, err := strconv.Atoi(args[2])
+	/*age, err := strconv.Atoi(args[2])
 	if err != nil{
 		errors.New("INVOKE: String to int conversion failed.")
-	}
+	}*/
 	
 	if function == "writeMedicalRecord" {
-		return c.writeMedicalRecord(stub, args[0], args[1], age, args[3], args[4])
+		return c.writeMedicalRecord(stub, args)
 	} 
 	/*else if function == "updateMedicalRecord" {
-		return c.updateMedicalRecord(stub, args[0], args[1], age, args[3], args[4])
+		return c.updateMedicalRecord(stub, args)
 	}*/
 	
 	return nil, nil
@@ -83,9 +83,9 @@ func (c *Chaincode) Invoke(stub shim.ChaincodeStubInterface, function string, ar
 
 func (c *Chaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error){
 
-	if len(args) != 1{
+	/*if len(args) != 1{
 		errors.New("QUERY: Incorrect number of arguments passed.")
-	}
+	}*/
 
 	if function == "readMedicalRecord" {
 		return c.readMedicalRecord(stub, args[0])
@@ -94,15 +94,25 @@ func (c *Chaincode) Query(stub shim.ChaincodeStubInterface, function string, arg
 	return nil, nil
 }
 
-func (c *Chaincode) writeMedicalRecord(stub shim.ChaincodeStubInterface, contactId string, name string, age int, gender string, race string) ([]byte, error){
+/*func (c *Chaincode) writeMedicalRecord(stub shim.ChaincodeStubInterface, args []string) ([]byte, error){
 
-	if contactId == ""{
+	if args[0] == ""{
 		return nil, errors.New("WRITE_MEDICAL_RECORD: Invalid Contact ID provided.")
 	}
 	
+	/*
 	var cont Contact
-	contactJson  := []byte(`{"ContactId":"` + contactId + `","Name":"` + name + `","Age":` + strconv.Itoa(age) + `,"Gender":"` + gender + `","Race":"` + race + `"}`)
+	contactJson  := []byte(`{"ContactId":"` + args[0] + `","Name":"` + args[1] + `","Age":` + args[2] + `,"Gender":"` + args[3] + `","Race":"` + args[4] + `"}`)
 	err := json.Unmarshal(contactJson, &cont)
+	if err != nil{
+		errors.New("WRITE_MEDICAL_RECORD: Invalid JSON object.")
+	}
+	*/
+	
+	var record MedicalRecord
+	recordJson  := []byte(`{"ContactId":"` + contactId + `","Name":"` + name + `","Age":` + strconv.Itoa(age) + `,"Gender":"` + gender + `","Race":"` + race + `"}`)
+	
+	err := json.Unmarshal(recordJson, &record)
 	if err != nil{
 		errors.New("WRITE_MEDICAL_RECORD: Invalid JSON object.")
 	}
@@ -110,11 +120,21 @@ func (c *Chaincode) writeMedicalRecord(stub shim.ChaincodeStubInterface, contact
 	c.saveRecord(stub, cont)
 	
 	return nil, nil
-}
-
-/*func (c *Chaincode) updateMedicalRecord(stub shim.ChaincodeStubInterface, contactId string, name string, age int, gender string, race string) ([]byte, error){
-	return nil, nil
 }*/
+
+func (c *Chaincode) writeMedicalRecord(stub shim.ChaincodeStubInterface, args []string) ([]byte, error){
+
+	if args[0] == ""{
+		return nil, errors.New("WRITE_MEDICAL_RECORD: Invalid Contact ID provided.")
+	}
+	
+	err = stub.PutState(args[0], []byte(args[1]))
+	if err != nil{
+		errors.New("SAVE_RECORD: Error saving Medical Record.")
+	}
+	
+	return nil, nil
+}
 
 func (c *Chaincode) saveRecord(stub shim.ChaincodeStubInterface, cont Contact) (bool, error){
 	
@@ -147,3 +167,7 @@ func (c *Chaincode) readMedicalRecord(stub shim.ChaincodeStubInterface, contactI
 	
 	return recordAsBytes, nil
 }
+
+/*func (c *Chaincode) updateMedicalRecord(stub shim.ChaincodeStubInterface, args []string) ([]byte, error){
+	return nil, nil
+}*/
