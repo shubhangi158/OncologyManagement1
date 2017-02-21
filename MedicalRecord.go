@@ -5,7 +5,7 @@ import(
 	"errors"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"encoding/json"
-	"strconv"
+	//"strconv"
 )
 
 var logger = shim.NewLogger("PatientRecord")
@@ -100,15 +100,13 @@ func (c *Chaincode) Query(stub shim.ChaincodeStubInterface, function string, arg
 		return nil, errors.New("WRITE_MEDICAL_RECORD: Invalid Contact ID provided.")
 	}
 	
-	/*
 	var cont Contact
 	contactJson  := []byte(`{"ContactId":"` + args[0] + `","Name":"` + args[1] + `","Age":` + args[2] + `,"Gender":"` + args[3] + `","Race":"` + args[4] + `"}`)
 	err := json.Unmarshal(contactJson, &cont)
 	if err != nil{
 		errors.New("WRITE_MEDICAL_RECORD: Invalid JSON object.")
 	}
-	*/
-	
+
 	var record MedicalRecord
 	recordJson  := []byte(`{"ContactId":"` + contactId + `","Name":"` + name + `","Age":` + strconv.Itoa(age) + `,"Gender":"` + gender + `","Race":"` + race + `"}`)
 	
@@ -128,7 +126,7 @@ func (c *Chaincode) writeMedicalRecord(stub shim.ChaincodeStubInterface, args []
 		return nil, errors.New("WRITE_MEDICAL_RECORD: Invalid Contact ID provided.")
 	}
 	
-	err = stub.PutState(args[0], []byte(args[1]))
+	err := stub.PutState(args[0], []byte(args[1]))
 	if err != nil{
 		errors.New("SAVE_RECORD: Error saving Medical Record.")
 	}
