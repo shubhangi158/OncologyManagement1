@@ -57,6 +57,12 @@ func main(){
 }
 
 func (c *Chaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error){
+
+	err := stub.PutState(args[0], []byte(args[0]))
+	if err != nil {
+		return nil, err
+	}
+
 	return nil, nil
 }
 
