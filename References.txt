@@ -1,0 +1,26 @@
+1. Using Bootstrap with Visualforce
+
+http://sfdcsrini.blogspot.com/2016/04/bootstrap-examples-in-visualforce-page.html
+
+2. Code to convert Blob to String
+
+public String blobToString(Blob input, String inCharset){
+        String hex = EncodingUtil.convertToHex(input);
+        System.assertEquals(0, hex.length() & 1);
+        final Integer bytesCount = hex.length() >> 1;
+        String[] bytes = new String[bytesCount];
+        for(Integer i = 0; i < bytesCount; ++i)
+            bytes[i] = hex.mid(i << 1, 2);
+        return EncodingUtil.urlDecode('%' + String.join(bytes, '%'), inCharset);
+}
+
+3. Link to open IBM Bluemix - Blockchain
+
+https://console.ng.bluemix.net/docs/services/blockchain/ibmblockchain_tutorials.html#hellocc?ca=dw-_-bluemix-_-cl-ibm-blockchain-101-quick-start-guide-for-developers-bluemix-trs-_-article
+
+4. Install GO Lang
+
+https://golang.org/doc/install
+
+
+
